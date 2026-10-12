@@ -12,9 +12,19 @@ Jogo de browser inspirado no clássico "hat shuffle" dos telões de estádio de 
 
 - Acertou: **HOME RUN!** Pontos = 100 × rodada, mais bônus de sequência (+50 por acerto seguido).
 - Errou: **STRIKE**. Três strikes e você está fora.
-- Cada rodada fica mais difícil: mais trocas, mais rápidas e, a partir da 8ª rodada, rotações envolvendo os três bonés.
+- Já começa rápido (360 ms por troca) e acelera a cada rodada até 170 ms, com mais trocas, rotações dos três bonés (a partir da 6ª rodada) e bonés que dão cambalhota no ar (a partir da 3ª).
 - Passe pelos 30 times para ser campeão.
 - O recorde fica salvo no navegador.
+
+## Vinhetas
+
+Seguem as dos telões de estádio (vídeos de referência: Angels e Nashville Sounds):
+
+- **HAT SHUFFLE**: abertura de cada rodada, com raios nas cores do time e a faixa com o nome dele.
+- **FOLLOW THE BALL!**: enquanto a bola é mostrada.
+- **WHERE IS THE BALL?**: com os selos **1 · 2 · 3** em cima de cada boné.
+- **WINNER!** ou **STRIKE!**: na revelação, com torcida, órgão e confete.
+- O muro do outfield mostra o nome do time da rodada.
 
 ## Rodar localmente
 

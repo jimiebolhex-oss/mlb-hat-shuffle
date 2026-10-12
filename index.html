@@ -9,7 +9,7 @@
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46' fill='%23fbfaf5' stroke='%23d9d4c7' stroke-width='4'/%3E%3Cpath d='M30 12 Q50 50 30 88 M70 12 Q50 50 70 88' fill='none' stroke='%23c8102e' stroke-width='5' stroke-dasharray='6 5'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Graduate&family=UnifrakturMaguntia&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Bebas+Neue&family=Graduate&family=UnifrakturMaguntia&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -52,8 +52,10 @@
 
     <section class="jumbotron" id="stage" aria-label="Campo com três bonés">
       <div class="lights" aria-hidden="true"></div>
+      <div class="wall" aria-hidden="true"><span class="wall-text" id="wall-text"></span></div>
       <div class="field" aria-hidden="true"></div>
-      <p class="message" id="message" role="status"></p>
+      <div class="vinhetas" id="vinhetas" aria-hidden="true"></div>
+      <p class="sr-only" id="message" role="status"></p>
     </section>
 
     <div class="controls">
@@ -65,7 +67,7 @@
   <div class="overlay" id="start-screen">
     <div class="card">
       <p class="eyebrow">Edição MLB · 30 times</p>
-      <h2 class="title">Hat Shuffle</h2>
+      <h2 class="title show-title" id="start-title" aria-label="Hat Shuffle">Hat Shuffle</h2>
       <ol class="rules">
         <li>Veja debaixo de qual boné a bola foi colocada.</li>
         <li>Acompanhe o embaralhamento sem piscar.</li>

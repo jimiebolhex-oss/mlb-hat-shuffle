@@ -5,16 +5,17 @@
 //   logo   = cor das letras
 //   stroke = contorno das letras (null = sem contorno)
 //   font   = 'blackletter' para letra gótica (Detroit); padrão = estilo varsity
+//   nick   = apelido no muro do outfield quando não é a última palavra do nome
 window.MLB_TEAMS = [
   // AL East
   { id: 'BAL', name: 'Baltimore Orioles',     div: 'AL East',    crown: '#000000', brim: '#DF4601', logo: '#DF4601', stroke: '#FFFFFF', mark: "O's" },
-  { id: 'BOS', name: 'Boston Red Sox',        div: 'AL East',    crown: '#0C2340', brim: '#0C2340', logo: '#BD3039', stroke: '#FFFFFF', mark: 'B' },
+  { id: 'BOS', name: 'Boston Red Sox', nick: 'Red Sox',        div: 'AL East',    crown: '#0C2340', brim: '#0C2340', logo: '#BD3039', stroke: '#FFFFFF', mark: 'B' },
   { id: 'NYY', name: 'New York Yankees',      div: 'AL East',    crown: '#0C2340', brim: '#0C2340', logo: '#FFFFFF', stroke: null,      mark: 'NY' },
   { id: 'TB',  name: 'Tampa Bay Rays',        div: 'AL East',    crown: '#092C5C', brim: '#092C5C', logo: '#8FBCE6', stroke: '#FFFFFF', mark: 'TB' },
-  { id: 'TOR', name: 'Toronto Blue Jays',     div: 'AL East',    crown: '#134A8E', brim: '#134A8E', logo: '#FFFFFF', stroke: '#E8291C', mark: 'TOR' },
+  { id: 'TOR', name: 'Toronto Blue Jays', nick: 'Blue Jays',     div: 'AL East',    crown: '#134A8E', brim: '#134A8E', logo: '#FFFFFF', stroke: '#E8291C', mark: 'TOR' },
 
   // AL Central
-  { id: 'CWS', name: 'Chicago White Sox',     div: 'AL Central', crown: '#27251F', brim: '#27251F', logo: '#FFFFFF', stroke: '#C4CED4', mark: 'SOX' },
+  { id: 'CWS', name: 'Chicago White Sox', nick: 'White Sox',     div: 'AL Central', crown: '#27251F', brim: '#27251F', logo: '#FFFFFF', stroke: '#C4CED4', mark: 'SOX' },
   { id: 'CLE', name: 'Cleveland Guardians',   div: 'AL Central', crown: '#00385D', brim: '#E50022', logo: '#E50022', stroke: '#FFFFFF', mark: 'C' },
   { id: 'DET', name: 'Detroit Tigers',        div: 'AL Central', crown: '#0C2340', brim: '#0C2340', logo: '#FFFFFF', stroke: null,      mark: 'D', font: 'blackletter' },
   { id: 'KC',  name: 'Kansas City Royals',    div: 'AL Central', crown: '#004687', brim: '#004687', logo: '#FFFFFF', stroke: '#BD9B60', mark: 'KC' },

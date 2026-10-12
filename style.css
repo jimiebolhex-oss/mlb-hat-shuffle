@@ -18,11 +18,24 @@
   --ink: #ffffff;
 
   --font-ui: 'Bebas Neue', Impact, 'Arial Narrow Bold', sans-serif;
+  --font-show: 'Bangers', 'Bebas Neue', Impact, sans-serif;
   --font-body: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
 [hidden] { display: none !important; }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
 
 html, body { margin: 0; }
 
@@ -198,37 +211,187 @@ body {
   transition: background .6s;
 }
 
-.field {
+/* Muro do outfield com o nome do time, como no vídeo dos Angels */
+.wall {
   position: absolute;
-  left: -10%;
-  right: -10%;
-  bottom: 0;
-  height: 40%;
-  background:
-    linear-gradient(180deg, rgba(0, 0, 0, .35), transparent 35%),
-    repeating-linear-gradient(90deg, var(--grass-1) 0 8%, var(--grass-2) 8% 16%);
-  border-top: 3px solid rgba(245, 242, 233, .45);
-  border-radius: 50% 50% 0 0 / 22% 22% 0 0;
-}
-
-.message {
-  position: absolute;
-  top: 7%;
   left: 0;
   right: 0;
-  z-index: 6;
-  margin: 0;
-  padding: 0 12px;
-  text-align: center;
-  font-family: var(--font-ui);
-  font-size: clamp(26px, 6vw, 56px);
-  letter-spacing: .06em;
-  color: var(--led);
-  text-shadow: 0 0 14px rgba(255, 201, 74, .55);
-  pointer-events: none;
+  top: 36%;
+  height: 12.5%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background:
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, .16) 0 2px, transparent 2px 9%),
+    linear-gradient(180deg, #2c6146, #1b4430);
+  border-top: 4px solid #f2c94c;
+  box-shadow: inset 0 -8px 12px rgba(0, 0, 0, .35);
 }
-.message.hit { color: var(--hit); text-shadow: 0 0 18px rgba(125, 255, 155, .7); animation: pop .55s cubic-bezier(.2, 1.6, .4, 1); }
-.message.miss { color: var(--strike); text-shadow: 0 0 18px rgba(255, 65, 65, .7); animation: pop .55s cubic-bezier(.2, 1.6, .4, 1); }
+.wall-text {
+  font-family: var(--font-show);
+  font-size: clamp(22px, 5.2vw, 46px);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--crown);
+  -webkit-text-stroke: .09em #ffffff;
+  paint-order: stroke fill;
+  transition: color .5s;
+}
+
+.field {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 48.5%;
+  bottom: 0;
+  background:
+    radial-gradient(ellipse 80% 62% at 50% 122%, #b9875a 0 60%, #a06c3e 61% 62%, transparent 63%),
+    linear-gradient(180deg, rgba(0, 0, 0, .32), transparent 28%),
+    repeating-linear-gradient(90deg, var(--grass-1) 0 8%, var(--grass-2) 8% 16%);
+}
+
+/* ---------- Vinhetas (estilo telão: HAT SHUFFLE, FOLLOW THE BALL, WHERE IS THE BALL?, WINNER) ---------- */
+.vinhetas { position: absolute; inset: 0; z-index: 7; pointer-events: none; }
+
+.vinheta {
+  position: absolute;
+  top: 5%;
+  left: 0;
+  right: 0;
+  text-align: center;
+  transform-origin: 50% 40%;
+}
+
+.show-text,
+.vinheta-text {
+  display: inline-block;
+  font-family: var(--font-show);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: .03em;
+  white-space: nowrap;
+  paint-order: stroke fill;
+}
+.vinheta-text { font-size: clamp(34px, 8.2vw, 78px); }
+.ch { display: inline-block; white-space: pre; }
+
+/* vermelho com contorno branco (FOLLOW THE BALL / WHERE IS THE BALL?) */
+.v-red {
+  color: #d81f2d;
+  -webkit-text-stroke: .1em #ffffff;
+  text-shadow: 0 .05em 0 #7d0c16, 0 .09em 0 #4b060c, 0 .14em .22em rgba(0, 0, 0, .55);
+}
+/* branco com contorno escuro (HAT SHUFFLE) */
+.v-white {
+  color: #ffffff;
+  -webkit-text-stroke: .1em #0d1020;
+  text-shadow: 0 .06em 0 #0d1020, 0 .11em 0 #0d1020, 0 .17em .26em rgba(0, 0, 0, .6);
+}
+/* dourado (WINNER) */
+.v-gold {
+  color: #ffd23f;
+  -webkit-text-stroke: .1em #8a1c0a;
+  text-shadow: 0 .05em 0 #8a1c0a, 0 .1em 0 #4f0f05, 0 0 .5em rgba(255, 210, 63, .55);
+}
+/* strike: branco com contorno vermelho */
+.v-strike {
+  color: #ffffff;
+  -webkit-text-stroke: .1em #c8102e;
+  text-shadow: 0 .05em 0 #7d0c16, 0 .1em 0 #4b060c, 0 0 .5em rgba(255, 65, 65, .6);
+}
+
+.vinheta-sub {
+  display: block;
+  margin-top: .3em;
+  font-family: var(--font-ui);
+  font-size: clamp(16px, 2.8vw, 24px);
+  letter-spacing: .12em;
+  color: var(--led);
+  text-shadow: 0 2px 0 #000, 0 0 12px rgba(255, 201, 74, .6);
+}
+
+/* Abertura de cada rodada */
+.opener {
+  position: absolute;
+  inset: 0;
+  z-index: 9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4%;
+  overflow: hidden;
+  background: var(--crown);
+}
+.opener .rays {
+  position: absolute;
+  inset: -60%;
+  background: repeating-conic-gradient(
+    from 0deg at 50% 50%,
+    color-mix(in srgb, var(--crown) 70%, #000) 0deg 9deg,
+    color-mix(in srgb, var(--crown) 85%, #fff) 9deg 18deg
+  );
+}
+.opener::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(closest-side, transparent 35%, rgba(0, 0, 0, .55));
+}
+.opener-title { position: relative; z-index: 1; font-size: clamp(54px, 15vw, 118px); }
+.opener-team {
+  position: relative;
+  z-index: 1;
+  padding: .2em 1em;
+  background: #ffffff;
+  color: var(--crown);
+  border-bottom: 5px solid var(--accent);
+  box-shadow: 0 8px 0 rgba(0, 0, 0, .35);
+  font-family: var(--font-ui);
+  font-size: clamp(20px, 4.4vw, 40px);
+  letter-spacing: .08em;
+  transform: skewX(-12deg);
+  white-space: nowrap;
+}
+.opener-team span { display: inline-block; transform: skewX(12deg); }
+
+/* Selos ① ② ③ para o palpite, em cima de cada boné (como no vídeo do Nashville) */
+.badge {
+  position: absolute;
+  top: 24%;
+  translate: -50% 0;
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  width: clamp(42px, 8.4vw, 78px);
+  aspect-ratio: 1;
+  padding: 0;
+  border: 4px solid #ffffff;
+  border-radius: 50%;
+  background: var(--crown);
+  color: #ffffff;
+  font-family: var(--font-show);
+  font-size: clamp(25px, 5vw, 48px);
+  line-height: 1;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, .35), 0 6px 14px rgba(0, 0, 0, .5);
+  cursor: pointer;
+}
+
+/* Pontos subindo do boné certo */
+.points-pop {
+  position: absolute;
+  z-index: 6;
+  translate: -50% 0;
+  font-family: var(--font-show);
+  font-size: clamp(26px, 5vw, 46px);
+  color: var(--led);
+  -webkit-text-stroke: .08em #1a1204;
+  paint-order: stroke fill;
+  text-shadow: 0 0 14px rgba(255, 201, 74, .7);
+  pointer-events: none;
+  white-space: nowrap;
+}
 
 @keyframes pop {
   from { transform: scale(.6); opacity: 0; }
@@ -396,15 +559,19 @@ kbd {
 }
 
 .title {
-  margin: 4px 0 14px;
-  font-family: var(--font-ui);
+  margin: 6px 0 16px;
+  font-family: var(--font-show);
   font-weight: 400;
-  font-size: clamp(54px, 13vw, 92px);
-  line-height: .9;
-  letter-spacing: .04em;
-  color: var(--led);
-  text-shadow: 0 0 24px rgba(255, 201, 74, .45);
+  font-size: clamp(50px, 12vw, 88px);
+  line-height: .95;
+  letter-spacing: .03em;
+  color: #ffffff;
+  -webkit-text-stroke: .1em #0d1020;
+  paint-order: stroke fill;
+  text-shadow: 0 .06em 0 #0d1020, 0 .11em 0 #0d1020, 0 .17em .26em rgba(0, 0, 0, .6);
 }
+.title.lost { color: #d81f2d; -webkit-text-stroke-color: #ffffff; text-shadow: 0 .05em 0 #7d0c16, 0 .09em 0 #4b060c; }
+.title.won { color: #ffd23f; -webkit-text-stroke-color: #8a1c0a; text-shadow: 0 .05em 0 #8a1c0a, 0 .1em 0 #4f0f05; }
 
 .rules {
   display: inline-block;
@@ -468,11 +635,11 @@ kbd {
   .scoreboard { grid-template-columns: repeat(2, 1fr) auto; }
   .scoreboard .mute { grid-row: 1 / span 2; grid-column: 3; }
   .jumbotron { aspect-ratio: 1 / 1; }
-  .slot { width: 31%; bottom: 16%; }
+  .slot { width: 31%; bottom: 14%; }
   .banner-cap { width: 52px; }
   .hint { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .banner.enter, .card, .message.hit, .message.miss, .jumbotron.shake { animation: none; }
+  .banner.enter, .card, .jumbotron.shake { animation: none; }
 }

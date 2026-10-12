@@ -251,12 +251,26 @@
       blip(i) { tone(660 + i * 220, 0.1, { type: 'square', vol: 0.06 }); },
       lift() { tone(520, 0.09, { type: 'triangle', vol: 0.12, to: 780 }); },
       drop() { tone(300, 0.08, { type: 'triangle', vol: 0.1, to: 180 }); },
-      // Taco na bola + o clássico "Charge!" do órgão do estádio
-      hit() {
-        noise(0.07, { type: 'highpass', freq: 1800, vol: 0.5 });
-        tone(1200, 0.05, { type: 'square', vol: 0.06 });
+      // Taco cortando o ar
+      swing() { noise(0.16, { freq: 500, to: 2600, q: 0.9, vol: 0.2, attack: 0.04 }); },
+      // "Crack!" do taco na bola
+      crack() {
+        noise(0.06, { type: 'highpass', freq: 1800, vol: 0.6 });
+        tone(1500, 0.04, { type: 'square', vol: 0.07 });
+        tone(220, 0.08, { type: 'triangle', vol: 0.15, to: 120 });
+      },
+      // Assobio da bola subindo
+      fly() { tone(700, 0.85, { type: 'sine', vol: 0.05, to: 2200 }); },
+      // Fogos de artifício
+      boom() {
+        tone(85, 0.6, { type: 'sine', vol: 0.3, to: 32 });
+        noise(0.7, { type: 'lowpass', freq: 700, vol: 0.22 });
+        noise(0.5, { type: 'highpass', freq: 4000, vol: 0.05, when: 0.12 });
+      },
+      // O clássico "Charge!" do órgão do estádio
+      charge() {
         const notes = [[392, 0.13], [523, 0.13], [659, 0.13], [784, 0.3], [659, 0.13], [784, 0.55]];
-        let at = 0.15;
+        let at = 0;
         for (const [f, d] of notes) {
           tone(f, d, { type: 'square', vol: 0.06, when: at });
           tone(f * 2, d, { type: 'triangle', vol: 0.03, when: at });
@@ -549,31 +563,185 @@
     }
   }
 
-  function confetti(slotEl, team) {
-    if (reduceMotion) return;
-    const stage = els.stage.getBoundingClientRect();
-    const r = slotEl.getBoundingClientRect();
-    const cx = r.left + r.width / 2 - stage.left;
-    const cy = r.top + r.height * 0.6 - stage.top;
-    const colors = [team.crown, team.brim, team.logo, '#ffffff', '#ffc94a'];
-    for (let i = 0; i < 46; i++) {
-      const p = document.createElement('i');
-      p.className = 'confetti';
-      p.style.background = colors[i % colors.length];
-      p.style.left = `${cx}px`;
-      p.style.top = `${cy}px`;
-      els.stage.appendChild(p);
-      const angle = -Math.PI / 2 + (Math.random() - 0.5) * Math.PI * 1.4;
-      const dist = 90 + Math.random() * 190;
-      const dx = Math.cos(angle) * dist;
-      const dy = Math.sin(angle) * dist;
-      p.animate([
-        { transform: 'translate(-50%,-50%) rotate(0deg)', opacity: 1 },
-        { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) rotate(${Math.random() * 540}deg)`, opacity: 1, offset: 0.55 },
-        { transform: `translate(calc(-50% + ${dx * 1.2}px), calc(-50% + ${dy + 160}px)) rotate(${Math.random() * 900}deg)`, opacity: 0 },
-      ], { duration: 1100 + Math.random() * 600, easing: 'cubic-bezier(.15,.7,.4,1)' })
-        .finished.then(() => p.remove());
+  // ---------- Home run: taco rebate a bola por cima do muro ----------
+  function batSVG(team) {
+    return `
+<svg viewBox="0 0 400 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="none">
+  <path d="M20 24 L170 25 C232 22 272 9 332 8 L382 8 Q397 8 397 30 Q397 52 382 52 L332 52 C272 51 232 38 170 35 L20 36 Z"
+        fill="url(#batWood)" stroke="#5c3816" stroke-width="2"/>
+  <path d="M200 27 C250 24 300 16 380 15 M220 33 C260 31 310 40 380 42" fill="none" stroke="rgba(92,56,22,.32)" stroke-width="1.5"/>
+  <rect x="20" y="23.5" width="92" height="13" rx="4" fill="${team.crown}"/>
+  <path d="M30 23.5 l6 13 M46 23.5 l6 13 M62 23.5 l6 13 M78 23.5 l6 13 M94 23.5 l6 13" stroke="rgba(255,255,255,.28)" stroke-width="2"/>
+  <ellipse cx="16" cy="30" rx="9" ry="14" fill="#7a4a1f" stroke="#5c3816" stroke-width="2"/>
+  <ellipse cx="16" cy="30" rx="4" ry="8" fill="${team.logo}" opacity=".85"/>
+  <path d="M340 13 Q384 12 389 22" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="3" stroke-linecap="round"/>
+</svg>`;
+  }
+
+  function place(el, x, y, w, h = w) {
+    Object.assign(el.style, { left: `${x}px`, top: `${y}px`, width: `${w}px`, height: `${h}px` });
+    els.stage.appendChild(el);
+    return el;
+  }
+
+  function impact(x, y, size) {
+    const flash = document.createElement('div');
+    flash.className = 'impact';
+    place(flash, x, y, size * 2.8);
+    flash.animate(
+      [{ transform: 'scale(.2) rotate(0deg)', opacity: 1 }, { transform: 'scale(1.4) rotate(25deg)', opacity: 0 }],
+      { duration: 320, easing: 'ease-out' },
+    ).finished.then(() => flash.remove());
+
+    const word = document.createElement('div');
+    word.className = 'crack-text';
+    word.textContent = 'CRACK!';
+    Object.assign(word.style, { left: `${x}px`, top: `${y - size * 1.5}px` });
+    els.stage.appendChild(word);
+    word.animate([
+      { transform: 'scale(.4) rotate(-12deg)', opacity: 0 },
+      { transform: 'scale(1.15) rotate(-8deg)', opacity: 1, offset: 0.25 },
+      { transform: 'scale(1) rotate(-8deg)', opacity: 1, offset: 0.7 },
+      { transform: 'scale(1.05) rotate(-8deg) translateY(-20%)', opacity: 0 },
+    ], { duration: 750, easing: 'ease-out' }).finished.then(() => word.remove());
+  }
+
+  function twinkle(x, y) {
+    const star = document.createElement('div');
+    star.className = 'twinkle';
+    place(star, x, y, 34);
+    star.animate(
+      [{ transform: 'scale(0) rotate(0deg)' }, { transform: 'scale(1.2) rotate(90deg)', offset: 0.4 }, { transform: 'scale(0) rotate(180deg)' }],
+      { duration: 450, easing: 'ease-out' },
+    ).finished.then(() => star.remove());
+  }
+
+  // A bola sobe girando, encolhe (vai para longe) e some no céu, deixando um rastro de luz
+  function flyBall(ball, x, y, size, stage) {
+    const toward = x < stage.width / 2 ? 1 : -1; // deriva para o meio do céu
+    const dx = toward * stage.width * 0.22;
+    const up = y - stage.height * 0.07;
+    const path = [
+      { transform: 'translate(0px, 0px) scale(1) rotate(0deg)', opacity: 1 },
+      { transform: `translate(${dx * 0.5}px, ${-up * 0.7}px) scale(.55) rotate(${toward * 540}deg)`, opacity: 1, offset: 0.45 },
+      { transform: `translate(${dx}px, ${-up}px) scale(.14) rotate(${toward * 1080}deg)`, opacity: 1, offset: 0.92 },
+      { transform: `translate(${dx}px, ${-up}px) scale(.08) rotate(${toward * 1140}deg)`, opacity: 0 },
+    ];
+    const timing = { duration: 900, easing: 'cubic-bezier(.2,.65,.35,1)', fill: 'both' };
+    for (let k = 5; k >= 1; k--) {
+      const trail = document.createElement('div');
+      trail.className = 'trail';
+      trail.style.background = `radial-gradient(circle, rgba(255,240,190,${0.55 - k * 0.08}) 0 45%, transparent 70%)`;
+      place(trail, x, y, size * (1 - k * 0.1));
+      trail.animate(path, { ...timing, delay: k * 28 }).finished.then(() => trail.remove());
     }
+    return ball.animate(path, timing).finished.then(() => {
+      ball.remove();
+      twinkle(x + dx, y - up);
+    });
+  }
+
+  function fireworks(team, stage) {
+    const bright = [team.logo, team.brim, team.crown].filter((c) => luminance(c) > 0.06);
+    const palette = [bright[0] || '#ffd23f', '#ffd23f', bright[1] || '#7fd8ff'];
+    shuffle([0.22, 0.5, 0.78]).forEach((fx, n) => {
+      setTimeout(() => {
+        const cx = stage.width * fx;
+        const cy = stage.height * (0.1 + Math.random() * 0.14);
+        const reach = stage.width * (0.11 + Math.random() * 0.05);
+        Sound.boom();
+        for (let i = 0; i < 34; i++) {
+          const color = i % 4 === 0 ? '#ffffff' : palette[n];
+          const spark = document.createElement('i');
+          spark.className = 'spark';
+          spark.style.background = color;
+          spark.style.color = color;
+          place(spark, cx, cy, Math.max(6, stage.width * 0.011));
+          const angle = (i / 34) * Math.PI * 2 + Math.random() * 0.2;
+          const dist = reach * (0.75 + Math.random() * 0.25);
+          const dx = Math.cos(angle) * dist;
+          const dy = Math.sin(angle) * dist;
+          spark.animate([
+            { transform: 'translate(0px, 0px) scale(1)', opacity: 1 },
+            { transform: `translate(${dx}px, ${dy}px) scale(1)`, opacity: 1, offset: 0.6 },
+            { transform: `translate(${dx * 1.08}px, ${dy + stage.height * 0.06}px) scale(.4)`, opacity: 0 },
+          ], { duration: 1000, easing: 'cubic-bezier(.1,.7,.3,1)' }).finished.then(() => spark.remove());
+        }
+      }, n * 260);
+    });
+  }
+
+  async function homeRun(slotEl, team, points) {
+    const stage = els.stage.getBoundingClientRect();
+    const b = slotEl.querySelector('.ball').getBoundingClientRect();
+    const bx = b.left + b.width / 2 - stage.left;
+    const by = b.top + b.height / 2 - stage.top;
+
+    if (reduceMotion) {
+      slotEl.classList.add('ball-gone');
+      Sound.crack();
+      vinheta('HOME RUN!', { kind: 'gold', bend: 2 });
+      pointsPop(slotEl, points);
+      Sound.charge();
+      Sound.cheer();
+      return;
+    }
+
+    // A bola salta de debaixo do boné (como uma bola lançada) e o taco a pega no ar.
+    // O taco vem do lado com mais espaço; no contato ele está na horizontal e sobe (uppercut).
+    const apexY = stage.height * 0.52;
+    const ball = document.createElement('div');
+    ball.className = 'fly-ball';
+    ball.innerHTML = BALL_SVG;
+    slotEl.classList.add('ball-gone');
+    place(ball, bx, by, b.width);
+    const toss = ball.animate(
+      [{ transform: 'translateY(0px) rotate(0deg)' }, { transform: `translateY(${apexY - by}px) rotate(-200deg)` }],
+      { duration: 180, easing: 'cubic-bezier(.2,.8,.4,1)', fill: 'forwards' },
+    );
+    Sound.lift();
+
+    const fromRight = bx < stage.width * 0.4;
+    const flip = fromRight ? 'scaleX(-1) ' : '';
+    const len = Math.max(stage.width * 0.36, 150);
+    const h = len * 0.15;
+    const pivotX = fromRight ? bx + len * 0.82 : bx - len * 0.82;
+    const swing = (op) => [
+      { transform: `${flip}rotate(80deg)`, opacity: 0 },
+      { transform: `${flip}rotate(62deg)`, opacity: op, offset: 0.18 },
+      { transform: `${flip}rotate(0deg)`, opacity: op, offset: 0.55 },
+      { transform: `${flip}rotate(-80deg)`, opacity: op, offset: 0.88 },
+      { transform: `${flip}rotate(-92deg)`, opacity: 0 },
+    ];
+    // taco + dois "fantasmas" atrasados = rastro de movimento
+    [1, 0.32, 0.14].forEach((op, k) => {
+      const bat = document.createElement('div');
+      bat.className = 'bat';
+      bat.innerHTML = batSVG(team);
+      place(bat, pivotX, apexY - h / 2, len, h);
+      bat.animate(swing(op), { duration: 300, delay: 15 + k * 16, fill: 'both' }).finished.then(() => bat.remove());
+    });
+    setTimeout(() => Sound.swing(), 40);
+    await wait(180);
+
+    // Contato
+    ball.style.top = `${apexY}px`;
+    toss.cancel();
+    Sound.crack();
+    impact(bx, apexY, b.width);
+    els.stage.classList.remove('shake');
+    void els.stage.offsetWidth;
+    els.stage.classList.add('shake');
+    const flight = flyBall(ball, bx, apexY, b.width, stage);
+    Sound.fly();
+
+    await wait(300);
+    vinheta('HOME RUN!', { kind: 'gold', bend: 2 });
+    pointsPop(slotEl, points);
+    Sound.charge();
+    Sound.cheer();
+    await flight;
+    fireworks(team, stage);
   }
 
   // ---------- Fluxo do jogo ----------
@@ -602,7 +770,7 @@
 
     await capsOut();
     slots.forEach((s, i) => {
-      s.classList.remove('lifted', 'has-ball', 'correct', 'wrong');
+      s.classList.remove('lifted', 'has-ball', 'correct', 'wrong', 'ball-gone');
       s.style.left = `${SLOT_X[i]}%`;
       s.tabIndex = -1;
       s.setAttribute('aria-label', `Boné ${i + 1}`);
@@ -653,19 +821,16 @@
     hideBadges();
     slots[cap].classList.add('lifted', hit ? 'correct' : 'wrong');
     Sound.lift();
-    await wait(380);
+    await wait(hit ? 260 : 380);
 
     if (hit) {
       state.streak += 1;
       const points = 100 * state.round + 50 * (state.streak - 1);
       state.score += points;
       state.beaten.push(team);
-      vinheta('WINNER!', { kind: 'gold', bend: 2.2 });
-      els.live.textContent = `Winner! Home run, mais ${points} pontos`;
-      pointsPop(slots[cap], points);
-      Sound.hit();
-      Sound.cheer();
-      confetti(slots[cap], team);
+      updateHud();
+      await homeRun(slots[cap], team, points);
+      els.live.textContent = `Home run! Mais ${points} pontos.`;
     } else {
       state.streak = 0;
       state.strikes += 1;

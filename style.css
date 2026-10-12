@@ -251,7 +251,7 @@ body {
     repeating-linear-gradient(90deg, var(--grass-1) 0 8%, var(--grass-2) 8% 16%);
 }
 
-/* ---------- Vinhetas (estilo telão: HAT SHUFFLE, FOLLOW THE BALL, WHERE IS THE BALL?, WINNER) ---------- */
+/* ---------- Vinhetas (estilo telão: HAT SHUFFLE, FOLLOW THE BALL, WHERE IS THE BALL?, HOME RUN, STRIKE) ---------- */
 .vinhetas { position: absolute; inset: 0; z-index: 7; pointer-events: none; }
 
 .vinheta {
@@ -288,7 +288,7 @@ body {
   -webkit-text-stroke: .1em #0d1020;
   text-shadow: 0 .06em 0 #0d1020, 0 .11em 0 #0d1020, 0 .17em .26em rgba(0, 0, 0, .6);
 }
-/* dourado (WINNER) */
+/* dourado (HOME RUN) */
 .v-gold {
   color: #ffd23f;
   -webkit-text-stroke: .1em #8a1c0a;
@@ -469,14 +469,45 @@ body {
 .slot.correct .cap svg { filter: drop-shadow(0 0 16px rgba(255, 214, 90, .95)); }
 .slot.wrong .cap svg { filter: grayscale(.5) brightness(.75) drop-shadow(0 6px 6px rgba(0, 0, 0, .4)); }
 
-.confetti {
+/* ---------- Home run ---------- */
+.slot.ball-gone .ball { visibility: hidden; }
+
+.bat {
   position: absolute;
-  z-index: 7;
-  width: 9px;
-  height: 14px;
-  border-radius: 2px;
+  z-index: 6;
+  transform-origin: 0 50%;
+  pointer-events: none;
+  filter: drop-shadow(0 6px 6px rgba(0, 0, 0, .45));
+}
+.bat svg, .fly-ball svg { display: block; width: 100%; height: 100%; }
+
+.fly-ball, .trail, .impact, .crack-text, .twinkle, .spark {
+  position: absolute;
+  translate: -50% -50%;
   pointer-events: none;
 }
+.fly-ball { z-index: 7; filter: drop-shadow(0 0 10px rgba(255, 255, 255, .6)); }
+.trail { z-index: 6; border-radius: 50%; }
+.impact {
+  z-index: 7;
+  background: radial-gradient(circle, #ffffff 0 30%, #ffe27a 45%, rgba(255, 210, 63, 0) 70%);
+  clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
+.crack-text {
+  z-index: 7;
+  font-family: var(--font-show);
+  font-size: clamp(26px, 5vw, 48px);
+  color: #ffd23f;
+  -webkit-text-stroke: .09em #1a1204;
+  paint-order: stroke fill;
+  white-space: nowrap;
+}
+.twinkle {
+  z-index: 7;
+  background: #ffffff;
+  clip-path: polygon(50% 0, 58% 42%, 100% 50%, 58% 58%, 50% 100%, 42% 58%, 0 50%, 42% 42%);
+}
+.spark { z-index: 6; border-radius: 50%; box-shadow: 0 0 10px 2px currentColor; }
 
 /* ---------- Controles ---------- */
 .controls {

@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Hat Shuffle MLB</title>
+  <meta name="description" content="Adivinhe debaixo de qual boné está a bola. Cada rodada é um time diferente da MLB, e o embaralhamento fica mais rápido.">
+  <meta name="theme-color" content="#070b18">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46' fill='%23fbfaf5' stroke='%23d9d4c7' stroke-width='4'/%3E%3Cpath d='M30 12 Q50 50 30 88 M70 12 Q50 50 70 88' fill='none' stroke='%23c8102e' stroke-width='5' stroke-dasharray='6 5'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Graduate&family=UnifrakturMaguntia&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Gradientes compartilhados pelos bonés (não usar display:none, senão o navegador não pinta os gradientes) -->
+  <svg class="svg-defs" aria-hidden="true" focusable="false">
+    <defs>
+      <radialGradient id="capShade" cx="38%" cy="22%" r="80%">
+        <stop offset="0" stop-color="#fff" stop-opacity=".32"/>
+        <stop offset=".45" stop-color="#fff" stop-opacity="0"/>
+        <stop offset="1" stop-color="#000" stop-opacity=".38"/>
+      </radialGradient>
+      <linearGradient id="brimShade" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#fff" stop-opacity=".18"/>
+        <stop offset="1" stop-color="#000" stop-opacity=".25"/>
+      </linearGradient>
+      <radialGradient id="ballShade" cx="38%" cy="32%" r="70%">
+        <stop offset="0" stop-color="#ffffff"/>
+        <stop offset=".7" stop-color="#eeeadf"/>
+        <stop offset="1" stop-color="#c9c3b3"/>
+      </radialGradient>
+    </defs>
+  </svg>
+
+  <div class="app">
+    <header class="scoreboard" aria-label="Placar">
+      <div class="cell"><span class="label">Rodada</span><span class="value" id="hud-round">0/30</span></div>
+      <div class="cell"><span class="label">Pontos</span><span class="value" id="hud-score">0</span></div>
+      <div class="cell"><span class="label">Strikes</span><span class="value strikes" id="hud-strikes" aria-label="0 de 3 strikes"><i></i><i></i><i></i></span></div>
+      <div class="cell"><span class="label">Recorde</span><span class="value" id="hud-best">0</span></div>
+      <button class="mute" id="mute-btn" type="button" aria-pressed="false" aria-label="Desligar som">🔊</button>
+    </header>
+
+    <section class="banner" id="banner" aria-live="polite">
+      <div class="banner-cap" id="banner-cap"></div>
+      <div class="banner-text">
+        <span class="kicker" id="banner-kicker">Hat Shuffle</span>
+        <h1 id="team-name">Edição MLB</h1>
+      </div>
+    </section>
+
+    <section class="jumbotron" id="stage" aria-label="Campo com três bonés">
+      <div class="lights" aria-hidden="true"></div>
+      <div class="field" aria-hidden="true"></div>
+      <p class="message" id="message" role="status"></p>
+    </section>
+
+    <div class="controls">
+      <button class="btn" id="next-btn" type="button" hidden>Próximo time ▶</button>
+      <p class="hint">Escolha clicando no boné · teclado: <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> e <kbd>Enter</kbd></p>
+    </div>
+  </div>
+
+  <div class="overlay" id="start-screen">
+    <div class="card">
+      <p class="eyebrow">Edição MLB · 30 times</p>
+      <h2 class="title">Hat Shuffle</h2>
+      <ol class="rules">
+        <li>Veja debaixo de qual boné a bola foi colocada.</li>
+        <li>Acompanhe o embaralhamento sem piscar.</li>
+        <li>Clique no boné onde a bola está.</li>
+      </ol>
+      <p class="rules-note">Cada rodada traz um time diferente da MLB, e o embaralhamento fica mais rápido. Três strikes e você está fora. Passe pelos 30 times para ser campeão.</p>
+      <button class="btn btn-big" id="start-btn" type="button">Play ball!</button>
+      <div class="cap-wall" id="cap-wall" aria-hidden="true"></div>
+    </div>
+  </div>
+
+  <div class="overlay" id="end-screen" hidden>
+    <div class="card">
+      <p class="eyebrow" id="end-eyebrow">Fim de jogo</p>
+      <h2 class="title" id="end-title">Você está fora!</h2>
+      <p class="end-sub" id="end-sub"></p>
+      <div class="stats">
+        <div><span class="stat-value" id="end-score">0</span><span class="stat-label">pontos</span></div>
+        <div><span class="stat-value" id="end-beaten">0</span><span class="stat-label">times vencidos</span></div>
+        <div><span class="stat-value" id="end-best">0</span><span class="stat-label">recorde</span></div>
+      </div>
+      <p class="new-record" id="new-record" hidden>Novo recorde!</p>
+      <div class="cap-wall small" id="beaten-wall" aria-hidden="true"></div>
+      <button class="btn btn-big" id="restart-btn" type="button">Jogar de novo</button>
+    </div>
+  </div>
+
+  <script src="teams.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
